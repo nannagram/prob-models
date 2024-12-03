@@ -6,3 +6,8 @@ def read_add_paths(path):
     for path in paths:
         sys.path.append(path)
     return paths
+
+def read_paths(path):
+    with open(path, 'r') as f:
+        paths = f.read().splitlines()
+    return paths
