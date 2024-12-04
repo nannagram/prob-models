@@ -80,7 +80,7 @@ def parallel_run_tommaso():
         Cbar = computeCbar(Xall, i, train_fraction=train_fraction)
         Xtrain, Xtest = split_train_test(X, train_fraction=train_fraction, standardize=True, seed=i)
         futures.append(single_run.remote(i, Xtrain, Xtest, Cbar=Cbar))
-    wait_and_dump(futures, resfile)
+    # wait_and_dump(futures, resfile)
 
 def parallel_run_camcan():
     resfile = 'all_results_camcan.pickle'
@@ -93,7 +93,7 @@ def parallel_run_camcan():
         Cbar = computeCbar(Xall, i, train_fraction=train_fraction)
         Xtrain, Xtest = split_train_test(X, train_fraction=train_fraction, standardize=True, seed=i)
         futures.append(single_run.remote(i, Xtrain, Xtest, Cbar=Cbar))
-    wait_and_dump(futures, resfile)
+    # wait_and_dump(futures, resfile)
 
 
 def parallel_run_dirichelet(alpha=1, Ttrain=144):
@@ -115,9 +115,9 @@ def parallel_run_dirichelet(alpha=1, Ttrain=144):
         Cbar = computeCbar(Xall, i, train_fraction=train_fraction)
         Xtrain, Xtest = split_train_test(X, train_fraction=train_fraction, standardize=True, seed=i)
         futures.append(single_run.remote(key, Xtrain, Xtest, Ctrue, Cbar=Cbar))
-    wait_and_dump(futures, resfile, Call)
+    # wait_and_dump(futures, resfile, Call)
 
-
+'''
 def wait_and_dump(futures, resfile, Call=None):
     remaining_refs = futures
     all_res = {}
@@ -139,6 +139,7 @@ def wait_and_dump(futures, resfile, Call=None):
 
     with open(resfile, 'wb') as f:
         pickle.dump(all_results, f)
+'''
 
 def computeCbar(Xall, idx, train_fraction=0.8):
     assert len(Xall) > 1
