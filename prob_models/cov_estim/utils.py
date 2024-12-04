@@ -1,6 +1,6 @@
 import numpy as np
 from os.path import isfile
-import implementations as impl
+import prob_models.cov_estim.implementations as impl
 from numpy.random import default_rng
 
 def get_dati_tommaso(standardize=True):

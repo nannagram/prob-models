@@ -11,7 +11,7 @@ from sklearn.exceptions import ConvergenceWarning
 from sklearn.base import BaseEstimator
 from sklearn.linear_model import ElasticNetCV
 
-import implementations as impl
+import prob_models.cov_estim.implementations as impl
 
 ### UTILITIES ##################################
 def completion_error(dataset, myC, returnstd=True):

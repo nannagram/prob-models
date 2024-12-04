@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: prob-models
+Version: 0.0.1
+Summary: A package for probabilistic models
+Author: BrainHack
+Maintainer: BrainHackers
+License: None
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: matplotlib
+Requires-Dist: scikit-learn
