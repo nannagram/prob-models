@@ -34,8 +34,8 @@ def split_train_test(X, train_fraction, standardize=False, shuffle=True, seed=No
 
 
 def train_rbm(X_train, X_test, n_hid, epochs):
-    n_v = X1_train.shape[-1]
-    variances = np.var(X1_train,axis=0,keepdims=True)
+    n_v = X_train.shape[-1]
+    variances = np.var(X_train, axis=0, keepdims=True)
     
     results = {}
     for n_h in n_hid:
@@ -49,7 +49,7 @@ def train_rbm(X_train, X_test, n_hid, epochs):
         trainer = CD(grbm)
         
         for epoch in range(epochs):
-            trainer.train(data=X1_train)
+            trainer.train(data = X_train)
             
             if epoch % 10 == 0:
                 print(f'Epoch {epoch}')
@@ -57,9 +57,9 @@ def train_rbm(X_train, X_test, n_hid, epochs):
         print('Computing log-likelihood and reconstruction error...')
         # log_z = partition_function_factorize_h(grbm, status=True)
         log_z = annealed_importance_sampling(grbm, status=True)
-        ll_train = np.mean(log_likelihood_v(grbm, log_z, X1_train))
-        ll_test = np.mean(log_likelihood_v(grbm, log_z, X1_test))
-        re = np.mean(reconstruction_error(grbm, X1_train))
+        ll_train = np.mean(log_likelihood_v(grbm, log_z, X_train))
+        ll_test = np.mean(log_likelihood_v(grbm, log_z, X_test))
+        re = np.mean(reconstruction_error(grbm, X_train))
         print('...done')
         
         results[n_h] = {'ll_train': ll_train, 'll_test': ll_test, 're': re}
