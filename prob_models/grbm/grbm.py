@@ -70,7 +70,7 @@ def train_rbm(X_train, X_test, n_hid, epochs):
 
 if __name__ == '__main__':
     # Load data 
-    paths = read_paths(op.join(os.getcwd(), op.join('..', '..', 'paths.txt')))
+    paths = read_paths(op.join(os.getcwd(), op.join('paths.txt')))
     datadic = getdata(paths, dataset='CamCAN')
     T, N = np.shape(list(datadic.values())[0])
 
@@ -91,6 +91,7 @@ paths = read_paths(op.join(os.getcwd(), op.join( 'paths.txt')))
 
 print ('loading data')
 datadic = getdata(paths,dataset='CamCAN')
+
 T, N = np.shape(list(datadic.values())[0])
 
 tf = 0.8
