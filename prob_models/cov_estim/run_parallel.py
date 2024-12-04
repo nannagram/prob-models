@@ -1,12 +1,12 @@
 #%%
 from genericpath import isfile
 import pickle
-from utils import get_dati_tommaso, get_dati_camcan,\
+from prob_models.cov_estim.utils import get_dati_tommaso, get_dati_camcan,\
     split_train_test, merge_dicts, generate_data_dirichlet
-import estimators
+import prob_models.cov_estim.estimators as estimators
 import numpy as np
 from time import process_time
-import ray
+# import ray
 #ray.init(num_cpus=24)
 #%%
 # Function executed by a single process
