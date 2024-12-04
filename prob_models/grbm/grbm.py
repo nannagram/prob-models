@@ -37,9 +37,11 @@ def split_train_test(X, train_fraction, standardize=False, shuffle=True, seed=No
 
     return Xtrain, Xtest
 
-
 # Load data 
-paths = read_paths(op.join(os.getcwd(), op.join('..', '..', 'paths.txt')))
+paths = read_paths(op.join(os.getcwd(), op.join( 'paths.txt')))
+#paths = read_paths(op.join(os.getcwd(), op.join('..','..', 'paths.txt')))
+
+print ('loading data')
 datadic = getdata(paths,dataset='CamCAN')
 T, N = np.shape(list(datadic.values())[0])
 
@@ -50,6 +52,8 @@ X1 = datadic[1]
 X1_train, X1_test = split_train_test(X1, train_fraction=tf, standardize=True, seed=0)
 
 n_v = X1_train.shape[-1]
+print (np.shape(X1_train),np.shape(X1_test))
+
 n_h = 20
 variances = np.var(X1_train,axis=0,keepdims=True)
 grbm = GaussianBinaryRBM(number_visibles=n_v,number_hiddens=n_h,
