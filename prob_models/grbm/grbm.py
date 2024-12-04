@@ -99,3 +99,42 @@ if __name__ == '__main__':
     epochs = 20
     results = train_rbm(X1_train, X1_test, n_hid, epochs)
     print(results)
+
+# Load data 
+paths = read_paths(op.join(os.getcwd(), op.join( 'paths.txt')))
+#paths = read_paths(op.join(os.getcwd(), op.join('..','..', 'paths.txt')))
+
+print ('loading data')
+datadic = getdata(paths,dataset='CamCAN')
+T, N = np.shape(list(datadic.values())[0])
+
+tf = 0.8
+sj_names = [name for name in datadic.keys()]
+X1 = datadic[1]
+
+X1_train, X1_test = split_train_test(X1, train_fraction=tf, standardize=True, seed=0)
+
+n_v = X1_train.shape[-1]
+print (np.shape(X1_train),np.shape(X1_test))
+
+n_h = 20
+variances = np.var(X1_train,axis=0,keepdims=True)
+grbm = GaussianBinaryRBM(number_visibles=n_v,number_hiddens=n_h,
+                         data=X1_train,initial_sigma=variances,
+                         initial_visible_offsets=0.0,
+                         initial_hidden_offsets=0.0)
+
+trainer = CD(grbm)
+
+epochs = 50
+for epoch in range(epochs):
+    trainer.train(data=X1_train)
+
+log_z = partition_function_factorize_h(grbm)
+ll_train = np.mean(log_likelihood_v(grbm, log_z, X1_train))
+ll_test = np.mean(log_likelihood_v(grbm, log_z, X1_test))
+re = np.mean(reconstruction_error(grbm, X1_train))
+
+print(ll_train)
+print(ll_test)
+print(re)
