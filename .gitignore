@@ -2,5 +2,9 @@ paths.txt
 __pycache__/
 data
 iPA_183
+<<<<<<< HEAD
+prob_models.egg-info/
+=======
 prob_models.egg-info
 savedfiles
+private_notebook.ipynb
