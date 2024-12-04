@@ -17,5 +17,15 @@ def read_paths(path):
 def standardise(sub):
     return (sub - np.mean(sub,axis=0)) / np.std(sub,axis=0)
 
-def getdata(path):
-    return {file.split('_')[1].split('-')[1]: standardise(np.loadtxt(path+file)) for i,file in enumerate(os.listdir(path)) if file.split('_')[0]=='ts' }
+def getdata(path,dataset='CamCAN'):
+    if dataset=='CamCAN':
+        datadic={}
+        for i in range(1,652):
+            sub=np.loadtxt(path[-1]+'subj{0}.txt.preprocessed'.format(i))
+            sub=standardise(sub)
+            datadic[i]=sub
+        return datadic    
+    elif dataset=='BIO':
+        return {file.split('_')[1].split('-')[1]: standardise(np.loadtxt(path[-2]+file)) for i,file in enumerate(os.listdir(path[-2])) if file.split('_')[0]=='ts' }
+    else:
+        print ('please insert valid dataset: CamCAN, BIO')

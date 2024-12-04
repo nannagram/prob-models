@@ -27,10 +27,11 @@ def single_run(key, Xtrain, Xtest, Ctrue=None, Cbar=None):
     # res["RIE"] = estimators.fit_RIE(Xtrain, Xtest)
     # res["RIE"]["time"] = process_time() - tstart
 
-    for cv_scoring in ["likelihood", "completion_error"]: #"pseudolikelihood"
-        # tstart = process_time() 
-        # res[f"PCA_CV_{cv_scoring}"] = estimators.fit_PCA_CV(Xtrain, Xtest, cv_scoring=cv_scoring)
-        # res[f"PCA_CV_{cv_scoring}"]["time"] = process_time() - tstart
+    # for cv_scoring in ["likelihood", "completion_error"]: #"pseudolikelihood"
+    for cv_scoring in ["likelihood"]: #"pseudolikelihood"
+        tstart = process_time() 
+        res[f"PCA_CV_{cv_scoring}"] = estimators.fit_PCA_CV(Xtrain, Xtest, cv_scoring=cv_scoring)
+        res[f"PCA_CV_{cv_scoring}"]["time"] = process_time() - tstart
         
         tstart = process_time() 
         res[f"Shrink_CV_{cv_scoring}"] = estimators.fit_Shrinkage_CV(Xtrain, Xtest, cv_scoring=cv_scoring)
@@ -45,10 +46,10 @@ def single_run(key, Xtrain, Xtest, Ctrue=None, Cbar=None):
         # res[f"ConservativePCA_CV_{cv_scoring}"]["time"] = process_time() - tstart
 
 
-    #     tstart = process_time() 
-    #     r = estimators.fit_Shrinkage_biasedmatrix_CV(Xtrain, Xtest, Cbar, cv_scoring=cv_scoring)
-    #     res[f"ShrinkGroup_CV_{cv_scoring}"] = r
-    #     res[f"ShrinkGroup_CV_{cv_scoring}"]["time"] = process_time() - tstart
+        tstart = process_time() 
+        r = estimators.fit_Shrinkage_biasedmatrix_CV(Xtrain, Xtest, Cbar, cv_scoring=cv_scoring)
+        res[f"ShrinkGroup_CV_{cv_scoring}"] = r
+        res[f"ShrinkGroup_CV_{cv_scoring}"]["time"] = process_time() - tstart
 
     #     val_frac_GA = 1 / 6 # Comparable to the 6 folds used in cross-validation above
     #     for b in [True, False]:
