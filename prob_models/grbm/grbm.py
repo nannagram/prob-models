@@ -41,6 +41,7 @@ def train_rbm(X_train, X_test, n_hid, epochs):
     ll_results, params = {}, {}
     for n_h in n_hid:
         print(f'\nTraining with {n_h} hidden units')
+        count += 1
         
         grbm = GaussianBinaryRBM(number_visibles=n_v,
                                 number_hiddens=n_h,
@@ -50,12 +51,21 @@ def train_rbm(X_train, X_test, n_hid, epochs):
                                 initial_hidden_offsets=0.0)
         trainer = CD(grbm)
         
+        count_epoch = 0
         for epoch in range(epochs):
+            count_epoch += 1    
             trainer.train(data = X_train)
             
             if epoch % 10 == 0:
                 print(f'Epoch {epoch}')
+                log_z = annealed_importance_sampling(grbm, status=False)
+                ll_trains[count-1, count_epoch-1] = np.mean(log_likelihood_v(grbm, log_z, X_train))
+                ll_tests[count-1, count_epoch-1] = np.mean(log_likelihood_v(grbm, log_z, X_test))
+                print('ll_train is', ll_trains[count-1, count_epoch-1])
+                print('ll_test is', ll_tests[count-1, count_epoch-1])
         
+        ll_trains = np.array(ll_trains)
+        ll_tests = np.array(ll_tests)
         print('Computing log-likelihood and reconstruction error...')
         # log_z = partition_function_factorize_h(grbm, status=True)
         log_z = annealed_importance_sampling(grbm, status=False)
