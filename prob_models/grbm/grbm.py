@@ -41,8 +41,7 @@ def train_rbm(X_train, X_test, n_hid, epochs):
     ll_results, params = {}, {}
     for n_h in n_hid:
         print(f'\nTraining with {n_h} hidden units')
-        count += 1
-        
+                
         grbm = GaussianBinaryRBM(number_visibles=n_v,
                                 number_hiddens=n_h,
                                 data=X_train,
@@ -51,21 +50,13 @@ def train_rbm(X_train, X_test, n_hid, epochs):
                                 initial_hidden_offsets=0.0)
         trainer = CD(grbm)
         
-        count_epoch = 0
         for epoch in range(epochs):
-            count_epoch += 1    
-            trainer.train(data = X_train)
+            
+            trainer.train(data=X_train)
             
             if epoch % 10 == 0:
                 print(f'Epoch {epoch}')
-                log_z = annealed_importance_sampling(grbm, status=False)
-                ll_trains[count-1, count_epoch-1] = np.mean(log_likelihood_v(grbm, log_z, X_train))
-                ll_tests[count-1, count_epoch-1] = np.mean(log_likelihood_v(grbm, log_z, X_test))
-                print('ll_train is', ll_trains[count-1, count_epoch-1])
-                print('ll_test is', ll_tests[count-1, count_epoch-1])
         
-        ll_trains = np.array(ll_trains)
-        ll_tests = np.array(ll_tests)
         print('Computing log-likelihood and reconstruction error...')
         # log_z = partition_function_factorize_h(grbm, status=True)
         log_z = annealed_importance_sampling(grbm, status=False)
@@ -97,20 +88,25 @@ if __name__ == '__main__':
         X_train.append(_X_train)
         X_test.append(_X_test)
         
-    X_train = np.concatenate(X_train, axis=0)
-    X_test = np.concatenate(X_test, axis=0)
-        
-    print(f'Traininig set shape: {X_train.shape}')
-
-    n_hid = np.arange(2, 101, 2)
-    epochs = 100
-    results, paramas = train_rbm(X_train, X_test, n_hid, epochs)
-    print(results)
-    print(paramas)
+    # X_train = np.concatenate(X_train, axis=0)
+    # X_test = np.concatenate(X_test, axis=0)
     
-    dirpath = op.join(os.getcwd(), 'results')
-    if not op.exists(dirpath):
-        os.makedirs(dirpath)
-    results.to_csv(op.join(dirpath, 'results.csv'))
-    for n_h, p in paramas.items():
-        np.save(op.join(dirpath, f'params_{n_h}.npy'), p)
+    subs = np.random.choice(range(len(X_train)), 5)
+    
+    for s in subs:
+        sub_X_train = X_train[s]
+        sub_X_test = X_test[s] 
+        print(f'Traininig set shape: {sub_X_train.shape}')
+
+        n_hid = np.arange(2, 30, 1)
+        epochs = 100
+        results, paramas = train_rbm(sub_X_train, sub_X_test, n_hid, epochs)
+        print(results)
+        print(paramas)
+        
+        dirpath = op.join(os.getcwd(), 'results' f'{s}')
+        if not op.exists(dirpath):
+            os.makedirs(dirpath)
+        results.to_csv(op.join(dirpath, 'results.csv'))
+        for n_h, p in paramas.items():
+            np.save(op.join(dirpath, f'params_{n_h}.npy'), p)
