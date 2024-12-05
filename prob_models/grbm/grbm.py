@@ -71,42 +71,35 @@ def train_rbm(X_train, X_test, n_hid, epochs):
     ll_results = pd.DataFrame.from_dict(ll_results, orient='index')
     return ll_results, params
 
+def single_rbm(X, n_hid, tf=0.8, epochs=100):
+    X_train, X_test = split_train_test(X, train_fraction=tf, standardize=True, seed=None)
+    results, paramas = train_rbm(X_train, X_test, n_hid, epochs)
+    return results, paramas
 
 if __name__ == '__main__':
     # Load data 
     paths = read_paths(op.join(os.getcwd(), op.join('..', '..', 'paths.txt')))
+    results_dir = op.join(os.getcwd(), 'results')
     # paths = read_paths('/home/jerry/python_projects/other/prob-models/paths.txt')
     datadic = getdata(paths, dataset='CamCAN')
     T, N = np.shape(list(datadic.values())[0])
 
     tf = 0.8
     # X1 = datadic[1]
-    X_train, X_test = [], []
-    for x in datadic.values():
-        _X_train, _X_test = split_train_test(x, train_fraction=tf, 
-                                             standardize=True, seed=None)
-        X_train.append(_X_train)
-        X_test.append(_X_test)
+    # X_train, X_test = [], []
+    # for x in datadic.values():
+    #     _X_train, _X_test = split_train_test(x, train_fraction=tf, 
+    #                                          standardize=True, seed=None)
+    #     X_train.append(_X_train)
+    #     X_test.append(_X_test)
         
     # X_train = np.concatenate(X_train, axis=0)
     # X_test = np.concatenate(X_test, axis=0)
-    
-    subs = np.random.choice(range(len(X_train)), 5)
-    
-    for s in subs:
-        sub_X_train = X_train[s]
-        sub_X_test = X_test[s] 
-        print(f'Traininig set shape: {sub_X_train.shape}')
-
-        n_hid = np.arange(2, 30, 1)
-        epochs = 100
-        results, paramas = train_rbm(sub_X_train, sub_X_test, n_hid, epochs)
-        print(results)
-        print(paramas)
+    for sj, x in datadic.items():
+        results, params = single_rbm(x, n_hid=[25], tf=0.8, epochs=100)
         
-        dirpath = op.join(os.getcwd(), 'results' f'{s}')
-        if not op.exists(dirpath):
-            os.makedirs(dirpath)
-        results.to_csv(op.join(dirpath, 'results.csv'))
-        for n_h, p in paramas.items():
-            np.save(op.join(dirpath, f'params_{n_h}.npy'), p)
+        sub_results_dir = op.join(results_dir, f'sub_{sj}')
+        if not op.exists(sub_results_dir):
+            os.makedirs(sub_results_dir)
+        results.to_csv(op.join(sub_results_dir, 'results.csv'))
+        np.save(op.join(sub_results_dir, 'params.npy'), params)
