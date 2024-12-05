@@ -80,6 +80,10 @@ def train_rbm(X_train, X_test, n_hid, epochs):
     ll_results = pd.DataFrame.from_dict(ll_results, orient='index')
     return ll_results, params
 
+def single_rbm(X, n_hid, tf=0.8, epochs=100):
+    X_train, X_test = split_train_test(X, train_fraction=tf, standardize=True, seed=None)
+    results, paramas = train_rbm(X_train, X_test, n_hid, epochs)
+    return results, paramas
 
 if __name__ == '__main__':
     # Load data 
