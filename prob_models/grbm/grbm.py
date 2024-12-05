@@ -41,8 +41,7 @@ def train_rbm(X_train, X_test, n_hid, epochs):
     ll_results, params = {}, {}
     for n_h in n_hid:
         print(f'\nTraining with {n_h} hidden units')
-        count += 1
-        
+                
         grbm = GaussianBinaryRBM(number_visibles=n_v,
                                 number_hiddens=n_h,
                                 data=X_train,
@@ -51,21 +50,13 @@ def train_rbm(X_train, X_test, n_hid, epochs):
                                 initial_hidden_offsets=0.0)
         trainer = CD(grbm)
         
-        count_epoch = 0
         for epoch in range(epochs):
-            count_epoch += 1    
-            trainer.train(data = X_train)
+            
+            trainer.train(data=X_train)
             
             if epoch % 10 == 0:
                 print(f'Epoch {epoch}')
-                log_z = annealed_importance_sampling(grbm, status=False)
-                ll_trains[count-1, count_epoch-1] = np.mean(log_likelihood_v(grbm, log_z, X_train))
-                ll_tests[count-1, count_epoch-1] = np.mean(log_likelihood_v(grbm, log_z, X_test))
-                print('ll_train is', ll_trains[count-1, count_epoch-1])
-                print('ll_test is', ll_tests[count-1, count_epoch-1])
         
-        ll_trains = np.array(ll_trains)
-        ll_tests = np.array(ll_tests)
         print('Computing log-likelihood and reconstruction error...')
         # log_z = partition_function_factorize_h(grbm, status=True)
         log_z = annealed_importance_sampling(grbm, status=False)
@@ -80,37 +71,35 @@ def train_rbm(X_train, X_test, n_hid, epochs):
     ll_results = pd.DataFrame.from_dict(ll_results, orient='index')
     return ll_results, params
 
+def single_rbm(X, n_hid, tf=0.8, epochs=100):
+    X_train, X_test = split_train_test(X, train_fraction=tf, standardize=True, seed=None)
+    results, paramas = train_rbm(X_train, X_test, n_hid, epochs)
+    return results, paramas
 
 if __name__ == '__main__':
     # Load data 
     paths = read_paths(op.join(os.getcwd(), op.join('..', '..', 'paths.txt')))
+    results_dir = op.join(os.getcwd(), 'results')
     # paths = read_paths('/home/jerry/python_projects/other/prob-models/paths.txt')
     datadic = getdata(paths, dataset='CamCAN')
     T, N = np.shape(list(datadic.values())[0])
 
     tf = 0.8
     # X1 = datadic[1]
-    X_train, X_test = [], []
-    for x in datadic.values():
-        _X_train, _X_test = split_train_test(x, train_fraction=tf, 
-                                             standardize=True, seed=None)
-        X_train.append(_X_train)
-        X_test.append(_X_test)
+    # X_train, X_test = [], []
+    # for x in datadic.values():
+    #     _X_train, _X_test = split_train_test(x, train_fraction=tf, 
+    #                                          standardize=True, seed=None)
+    #     X_train.append(_X_train)
+    #     X_test.append(_X_test)
         
-    X_train = np.concatenate(X_train, axis=0)
-    X_test = np.concatenate(X_test, axis=0)
+    # X_train = np.concatenate(X_train, axis=0)
+    # X_test = np.concatenate(X_test, axis=0)
+    for sj, x in datadic.items():
+        results, params = single_rbm(x, n_hid=[25], tf=0.8, epochs=100)
         
-    print(f'Traininig set shape: {X_train.shape}')
-
-    n_hid = np.arange(2, 101, 2)
-    epochs = 100
-    results, paramas = train_rbm(X_train, X_test, n_hid, epochs)
-    print(results)
-    print(paramas)
-    
-    dirpath = op.join(os.getcwd(), 'results')
-    if not op.exists(dirpath):
-        os.makedirs(dirpath)
-    results.to_csv(op.join(dirpath, 'results.csv'))
-    for n_h, p in paramas.items():
-        np.save(op.join(dirpath, f'params_{n_h}.npy'), p)
+        sub_results_dir = op.join(results_dir, f'sub_{sj}')
+        if not op.exists(sub_results_dir):
+            os.makedirs(sub_results_dir)
+        results.to_csv(op.join(sub_results_dir, 'results.csv'))
+        np.save(op.join(sub_results_dir, 'params.npy'), params)
