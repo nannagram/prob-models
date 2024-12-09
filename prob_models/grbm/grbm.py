@@ -34,11 +34,14 @@ def split_train_test(X, train_fraction, standardize=False, shuffle=True,
     return Xtrain, Xtest
 
 
-def train_rbm(X_train, X_test, n_hid, epochs):
+def train_rbm(X_train, X_test, n_hid, epochs, n_epochs=10):
     n_v = X_train.shape[-1]
     variances = np.var(X_train, axis=0, keepdims=True)
     
     ll_results, params = {}, {}
+    ll_trains = np.zeros((len(n_hid), int(epochs/n_epochs)+1))
+    ll_tests = np.zeros((len(n_hid), int(epochs/n_epochs)+1))
+    count = 0 
     for n_h in n_hid:
         print(f'\nTraining with {n_h} hidden units')
                 
@@ -52,9 +55,12 @@ def train_rbm(X_train, X_test, n_hid, epochs):
         
         for epoch in range(epochs):
             
+            trainer.train(data = X_train)
+            
             trainer.train(data=X_train)
             
             if epoch % 10 == 0:
+                count_epoch += 1    
                 print(f'Epoch {epoch}')
         
         print('Computing log-likelihood and reconstruction error...')
